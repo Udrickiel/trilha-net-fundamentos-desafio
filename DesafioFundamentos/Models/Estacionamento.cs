@@ -1,4 +1,7 @@
 using System.Runtime.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DesafioFundamentos.Models
 {
@@ -7,9 +10,14 @@ namespace DesafioFundamentos.Models
         private decimal precoInicial = 0;
         private decimal precoPorHora = 0;
         private List<string> veiculos = new List<string>();
+        private List<(string placa, DateTime entrada, DateTime? saida)> registros = new List<(string placa, DateTime entrada, DateTime? saida)>();
 
         public Estacionamento(decimal precoInicial, decimal precoPorHora)
         {
+            if(precoInicial <0 || precoPorHora <0)
+            {
+                throw new ArgumentException("Valor digitado invalido, verifique e tente novamente!");
+            }
             this.precoInicial = precoInicial;
             this.precoPorHora = precoPorHora;
         }
@@ -30,6 +38,7 @@ namespace DesafioFundamentos.Models
                 veiculos.Add(placa);
                 Console.WriteLine("Veiculo adicionado com sucesso");
             }
+            registros.Add((placa, DateTime.Now, null));
         }
 
         public void RemoverVeiculo()
@@ -49,12 +58,18 @@ namespace DesafioFundamentos.Models
                     
                     if (int.TryParse(input, out horas))
                     {
+                        if (horas < 0)
+                        {
+                            Console.WriteLine("Valor invalido!");
+                            continue;
+                        }
                         break;
                     }
                     else 
                     {
                         Console.WriteLine("Digite um valor valido!");
                     }
+                   
         
                 }    
                 valorTotal = precoInicial + precoPorHora * horas;
@@ -65,6 +80,11 @@ namespace DesafioFundamentos.Models
             else
             {
                 Console.WriteLine("Desculpe, esse veículo não está estacionado aqui. Confira se digitou a placa corretamente");
+            }
+            var registro = registros.FirstOrDefault(r => r.placa == removerCarro.ToUpper());
+            if (registro != null)
+            {
+                registro.saida = DateTime.Now;
             }
         }
 
@@ -84,6 +104,10 @@ namespace DesafioFundamentos.Models
             {
                 Console.WriteLine("Não há veículos estacionados.");
             }
+        }
+        public void listaTotalDia()
+        {
+            
         }
     }
 }
